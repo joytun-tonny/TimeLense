@@ -1,0 +1,49 @@
+======================================================================
+CHRONOSPHERE INSIGHT REPORT
+======================================================================
+
+
+CORRELATION INSIGHTS
+----------------------------------------------------------------------
+1. 🔗 total_events and total_revenue show very strong positive correlation (r=0.99). When total_events increases, total_revenue tends to increase as well.
+
+2. 🔗 unique_users and unique_products show very strong positive correlation (r=0.98). When unique_users increases, unique_products tends to increase as well.
+
+3. 🔗 total_events and unique_products show very strong positive correlation (r=0.97). When total_events increases, unique_products tends to increase as well.
+
+4. 🔗 unique_products and total_revenue show very strong positive correlation (r=0.96). When unique_products increases, total_revenue tends to increase as well.
+
+5. 🔗 unique_users and total_events show very strong positive correlation (r=0.95). When unique_users increases, total_events tends to increase as well.
+
+6. 🔗 unique_users and total_revenue show very strong positive correlation (r=0.96). When unique_users increases, total_revenue tends to increase as well.
+
+
+VOLATILITY ASSESSMENT
+----------------------------------------------------------------------
+1. ✅ unique_products is highly stable (coefficient of variation: 0.11). Consistent values around 20344.58.
+
+
+TREND ANALYSIS
+----------------------------------------------------------------------
+1. 📈 unique_users shows a weak downward trend (R²=0.19). Overall change of -38.0% over the period. Average daily change: -221.57.
+
+2. 📈 total_revenue shows a weak downward trend (R²=0.18). Overall change of -24.0% over the period. Average daily change: -7175.66.
+
+3. 📈 total_events shows a weak downward trend (R²=0.14). Overall change of -21.6% over the period. Average daily change: -885.57.
+
+4. 📈 unique_products shows a weak downward trend (R²=0.13). Overall change of -13.0% over the period. Average daily change: -87.89.
+
+
+ANOMALY DETECTION
+----------------------------------------------------------------------
+1. 🎯 Detected 2 significant anomalies in unique_users (6.5% of data). Anomalies are scattered, suggesting random fluctuations. Largest spike: 33310.00 on 2019-10-02.
+
+2. 🎯 Detected 1 significant anomalies in total_events (3.2% of data). Anomalies are scattered, suggesting random fluctuations. Largest spike: 188101.00 on 2019-10-02.
+
+3. 🎯 Detected 1 significant anomalies in unique_products (3.2% of data). Anomalies are scattered, suggesting random fluctuations. Largest spike: 28011.00 on 2019-10-02.
+
+4. 🎯 Detected 1 significant anomalies in total_revenue (3.2% of data). Anomalies are scattered, suggesting random fluctuations. Largest spike: 1375565.75 on 2019-10-02.
+
+======================================================================
+Total Insights: 15
+======================================================================

@@ -543,3 +543,321 @@ class ChronosphereVisualizer:
         )
         
         return fig
+    
+    def trend_analysis_overview(self, metric_cols: List[str]) -> go.Figure:
+        """
+        Create comprehensive trend analysis overview with multiple metrics
+        """
+        fig = make_subplots(
+            rows=len(metric_cols), 
+            cols=1,
+            subplot_titles=[f"{col} Trend" for col in metric_cols],
+            vertical_spacing=0.05,
+            shared_xaxes=True
+        )
+        
+        colors = px.colors.qualitative.Set3
+        
+        for i, col in enumerate(metric_cols, 1):
+            # Calculate moving averages
+            df_sorted = self.df.sort_values(self.time_col)
+            df_sorted[f'{col}_ma7'] = df_sorted[col].rolling(window=min(7, len(df_sorted)//10)).mean()
+            df_sorted[f'{col}_ma30'] = df_sorted[col].rolling(window=min(30, len(df_sorted)//5)).mean()
+            
+            # Raw data
+            fig.add_trace(
+                go.Scatter(
+                    x=df_sorted[self.time_col],
+                    y=df_sorted[col],
+                    mode='lines',
+                    name=f'{col} Raw',
+                    line=dict(color=colors[i % len(colors)], width=1, dash='dot'),
+                    opacity=0.6,
+                    showlegend=(i == 1)
+                ),
+                row=i, col=1
+            )
+            
+            # Moving averages
+            fig.add_trace(
+                go.Scatter(
+                    x=df_sorted[self.time_col],
+                    y=df_sorted[f'{col}_ma7'],
+                    mode='lines',
+                    name=f'7-period MA',
+                    line=dict(color=colors[i % len(colors)], width=2),
+                    showlegend=(i == 1)
+                ),
+                row=i, col=1
+            )
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=df_sorted[self.time_col],
+                    y=df_sorted[f'{col}_ma30'],
+                    mode='lines',
+                    name=f'30-period MA',
+                    line=dict(color=colors[i % len(colors)], width=3),
+                    showlegend=(i == 1)
+                ),
+                row=i, col=1
+            )
+        
+        fig.update_layout(
+            title="Trend Analysis Overview",
+            showlegend=True,
+            plot_bgcolor=self.theme['paper'],
+            paper_bgcolor=self.theme['background'],
+            font=dict(color=self.theme['text']),
+            height=200 * len(metric_cols)
+        )
+        
+        return fig
+    
+    def seasonal_decomposition(self, metric_col: str) -> go.Figure:
+        """
+        Create seasonal decomposition visualization
+        """
+        df_sorted = self.df.sort_values(self.time_col).copy()
+        
+        # Simple seasonal decomposition using rolling statistics
+        # Calculate trend (long-term moving average)
+        window_size = max(min(30, len(df_sorted)//4), 3)
+        df_sorted['trend'] = df_sorted[metric_col].rolling(window=window_size, center=True).mean()
+        
+        # Calculate seasonal component (simplified)
+        df_sorted['detrended'] = df_sorted[metric_col] - df_sorted['trend']
+        
+        # Calculate day of week or hour seasonality based on data frequency
+        if len(df_sorted) > 168:  # More than a week of hourly data
+            df_sorted['time_group'] = pd.to_datetime(df_sorted[self.time_col]).dt.hour
+            seasonal_period = 24
+        else:
+            df_sorted['time_group'] = pd.to_datetime(df_sorted[self.time_col]).dt.dayofweek
+            seasonal_period = 7
+        
+        seasonal_pattern = df_sorted.groupby('time_group')['detrended'].mean()
+        df_sorted['seasonal'] = df_sorted['time_group'].map(seasonal_pattern)
+        
+        # Calculate residual
+        df_sorted['residual'] = df_sorted[metric_col] - df_sorted['trend'] - df_sorted['seasonal']
+        
+        # Create subplots
+        fig = make_subplots(
+            rows=4, cols=1,
+            subplot_titles=['Original', 'Trend', 'Seasonal', 'Residual'],
+            vertical_spacing=0.08,
+            shared_xaxes=True
+        )
+        
+        # Original data
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted[metric_col],
+                      mode='lines', name='Original', line=dict(color=self.theme['primary'])),
+            row=1, col=1
+        )
+        
+        # Trend
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['trend'],
+                      mode='lines', name='Trend', line=dict(color=self.theme['secondary'])),
+            row=2, col=1
+        )
+        
+        # Seasonal
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['seasonal'],
+                      mode='lines', name='Seasonal', line=dict(color=self.theme['accent'])),
+            row=3, col=1
+        )
+        
+        # Residual
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['residual'],
+                      mode='lines', name='Residual', line=dict(color='#ff6b6b')),
+            row=4, col=1
+        )
+        
+        fig.update_layout(
+            title=f"Seasonal Decomposition: {metric_col}",
+            showlegend=False,
+            plot_bgcolor=self.theme['paper'],
+            paper_bgcolor=self.theme['background'],
+            font=dict(color=self.theme['text']),
+            height=800
+        )
+        
+        return fig
+    
+    def growth_rate_analysis(self, metric_col: str) -> go.Figure:
+        """
+        Create growth rate analysis with multiple time periods
+        """
+        df_sorted = self.df.sort_values(self.time_col).copy()
+        
+        # Calculate different period growth rates
+        df_sorted['value'] = df_sorted[metric_col]
+        df_sorted['pct_change_1'] = df_sorted['value'].pct_change(1) * 100  # Period-over-period
+        df_sorted['pct_change_7'] = df_sorted['value'].pct_change(min(7, len(df_sorted)//10)) * 100  # 7-period
+        df_sorted['pct_change_30'] = df_sorted['value'].pct_change(min(30, len(df_sorted)//5)) * 100  # 30-period
+        
+        # Create subplots
+        fig = make_subplots(
+            rows=3, cols=1,
+            subplot_titles=[
+                f'{metric_col} Value',
+                'Period-over-Period Growth Rate (%)',
+                'Multi-Period Growth Rate (%)'
+            ],
+            vertical_spacing=0.1,
+            shared_xaxes=True
+        )
+        
+        # Original values
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['value'],
+                      mode='lines', name=metric_col, line=dict(color=self.theme['primary'], width=2)),
+            row=1, col=1
+        )
+        
+        # Period-over-period growth
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['pct_change_1'],
+                      mode='lines', name='1-Period Growth %', 
+                      line=dict(color=self.theme['secondary'], width=2)),
+            row=2, col=1
+        )
+        
+        # Add zero line for growth rates
+        fig.add_hline(y=0, line_dash="dash", line_color="gray", row=2, col=1)
+        
+        # Multi-period growth rates
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['pct_change_7'],
+                      mode='lines', name='7-Period Growth %', 
+                      line=dict(color=self.theme['accent'], width=2)),
+            row=3, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_sorted[self.time_col], y=df_sorted['pct_change_30'],
+                      mode='lines', name='30-Period Growth %', 
+                      line=dict(color='#ff6b6b', width=2)),
+            row=3, col=1
+        )
+        
+        # Add zero line for growth rates
+        fig.add_hline(y=0, line_dash="dash", line_color="gray", row=3, col=1)
+        
+        fig.update_layout(
+            title=f"Growth Rate Analysis: {metric_col}",
+            plot_bgcolor=self.theme['paper'],
+            paper_bgcolor=self.theme['background'],
+            font=dict(color=self.theme['text']),
+            height=900
+        )
+        
+        return fig
+    
+    def comparative_trends(self, metric_cols: List[str], normalize: bool = True) -> go.Figure:
+        """
+        Create comparative trends visualization for multiple metrics
+        """
+        df_sorted = self.df.sort_values(self.time_col).copy()
+        
+        fig = go.Figure()
+        
+        colors = px.colors.qualitative.Set3
+        
+        for i, col in enumerate(metric_cols):
+            if normalize:
+                # Normalize to 0-100 scale for comparison
+                col_min = df_sorted[col].min()
+                col_max = df_sorted[col].max()
+                if col_max != col_min:
+                    normalized_values = ((df_sorted[col] - col_min) / (col_max - col_min)) * 100
+                else:
+                    normalized_values = [50] * len(df_sorted)
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_sorted[self.time_col],
+                        y=normalized_values,
+                        mode='lines',
+                        name=f'{col} (normalized)',
+                        line=dict(color=colors[i % len(colors)], width=2)
+                    )
+                )
+            else:
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_sorted[self.time_col],
+                        y=df_sorted[col],
+                        mode='lines',
+                        name=col,
+                        line=dict(color=colors[i % len(colors)], width=2),
+                        yaxis=f'y{i+1}' if i > 0 else 'y'
+                    )
+                )
+        
+        title = "Comparative Trends Analysis"
+        if normalize:
+            title += " (Normalized 0-100)"
+        
+        layout_updates = {
+            'title': title,
+            'plot_bgcolor': self.theme['paper'],
+            'paper_bgcolor': self.theme['background'],
+            'font': dict(color=self.theme['text']),
+            'height': 600,
+            'hovermode': 'x unified'
+        }
+        
+        if not normalize and len(metric_cols) > 1:
+            # Create multiple y-axes for different scales
+            layout_updates.update({
+                'yaxis': dict(title=metric_cols[0], side='left'),
+                'yaxis2': dict(title=metric_cols[1] if len(metric_cols) > 1 else '', side='right', overlaying='y'),
+            })
+        
+        fig.update_layout(**layout_updates)
+        
+        return fig
+    
+    def trend_statistics_summary(self, metric_cols: List[str]) -> Dict:
+        """
+        Calculate comprehensive trend statistics
+        """
+        stats = {}
+        
+        for col in metric_cols:
+            df_sorted = self.df.sort_values(self.time_col)
+            values = df_sorted[col].dropna()
+            
+            if len(values) < 2:
+                continue
+                
+            # Basic statistics
+            stats[col] = {
+                'mean': values.mean(),
+                'std': values.std(),
+                'min': values.min(),
+                'max': values.max(),
+                'range': values.max() - values.min(),
+                'trend_direction': 'increasing' if values.iloc[-1] > values.iloc[0] else 'decreasing',
+                'total_change': values.iloc[-1] - values.iloc[0],
+                'total_change_percent': ((values.iloc[-1] - values.iloc[0]) / values.iloc[0] * 100) if values.iloc[0] != 0 else 0,
+                'volatility': values.std() / values.mean() * 100 if values.mean() != 0 else 0,
+            }
+            
+            # Growth rate statistics
+            pct_changes = values.pct_change().dropna()
+            if len(pct_changes) > 0:
+                stats[col].update({
+                    'avg_growth_rate': pct_changes.mean() * 100,
+                    'growth_rate_std': pct_changes.std() * 100,
+                    'max_growth_rate': pct_changes.max() * 100,
+                    'min_growth_rate': pct_changes.min() * 100,
+                })
+        
+        return stats

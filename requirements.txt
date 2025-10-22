@@ -29,7 +29,17 @@ xlrd>=2.0.1
 # Utilities
 python-dotenv>=1.0.0
 tqdm>=4.66.0
+requests>=2.31.0  # For LLM API calls
+
+# Advanced Visualization Dependencies
+umap-learn>=0.5.0  # For UMAP dimensionality reduction
+plotly-dash>=2.14.0  # Enhanced interactive features
+kaleido>=0.2.1  # For static image export
 
 # Optional but Recommended
 # prophet>=1.1.0  # For advanced forecasting (uncomment if needed)
-# umap-learn>=0.5.0  # For UMAP dimensionality reduction (uncomment if needed)
+
+# Development & Testing
+pytest>=7.4.0
+black>=23.7.0
+flake8>=6.0.0

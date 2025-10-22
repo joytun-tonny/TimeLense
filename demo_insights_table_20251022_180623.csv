@@ -1,0 +1,11 @@
+rank,title,importance,source,category,text,timestamp
+1,,92,,,"🎯 Detected 46 significant anomalies in page_views (2.1% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 10086.00 on 2025-08-29.",
+2,,82,,,"🎯 Detected 41 significant anomalies in revenue (1.9% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 17512.06 on 2025-08-29.",
+3,,78,,,"🎯 Detected 39 significant anomalies in orders (1.8% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 193.00 on 2025-08-29.",
+4,,77,,,"🔗 orders and revenue show very strong positive correlation (r=0.97). When orders increases, revenue tends to increase as well.",
+5,,74,,,"🎯 Detected 37 significant anomalies in website_visitors (1.7% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 3322.00 on 2025-08-29.",
+6,,74,,,"🔗 website_visitors and page_views show very strong positive correlation (r=0.93). When website_visitors increases, page_views tends to increase as well.",
+7,,70,,,"🔗 page_views and orders show very strong positive correlation (r=0.88). When page_views increases, orders tends to increase as well.",
+8,,69,,,"🔗 page_views and revenue show very strong positive correlation (r=0.87). When page_views increases, revenue tends to increase as well.",
+9,,68,,,"🔗 website_visitors and orders show very strong positive correlation (r=0.85). When website_visitors increases, orders tends to increase as well.",
+10,,63,,,"🔗 website_visitors and revenue show strong positive correlation (r=0.80). When website_visitors increases, revenue tends to increase as well.",

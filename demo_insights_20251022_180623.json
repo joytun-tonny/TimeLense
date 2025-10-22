@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-22T18:06:16.161254",
+    "total_records": 2160,
+    "metrics_analyzed": 9,
+    "llm_enabled": true
+  },
+  "insights": [
+    {
+      "type": "anomaly",
+      "column": "page_views",
+      "text": "\ud83c\udfaf Detected 46 significant anomalies in page_views (2.1% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 10086.00 on 2025-08-29.",
+      "data": {
+        "count": 46,
+        "percentage": 2.1296296296296298,
+        "clustered": "True",
+        "max_value": 10086.0,
+        "max_date": "2025-08-29 07:06:11.183308",
+        "anomaly_indices": [
+          369,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          396,
+          397,
+          400
+        ]
+      },
+      "importance": 92
+    },
+    {
+      "type": "anomaly",
+      "column": "revenue",
+      "text": "\ud83c\udfaf Detected 41 significant anomalies in revenue (1.9% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 17512.06 on 2025-08-29.",
+      "data": {
+        "count": 41,
+        "percentage": 1.8981481481481481,
+        "clustered": "True",
+        "max_value": 17512.06,
+        "max_date": "2025-08-29 09:06:11.183308",
+        "anomaly_indices": [
+          372,
+          373,
+          376,
+          395,
+          396,
+          397,
+          846,
+          847,
+          848,
+          849
+        ]
+      },
+      "importance": 82
+    },
+    {
+      "type": "anomaly",
+      "column": "orders",
+      "text": "\ud83c\udfaf Detected 39 significant anomalies in orders (1.8% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 193.00 on 2025-08-29.",
+      "data": {
+        "count": 39,
+        "percentage": 1.8055555555555554,
+        "clustered": "True",
+        "max_value": 193.0,
+        "max_date": "2025-08-29 06:06:11.183308",
+        "anomaly_indices": [
+          395,
+          397,
+          846,
+          847,
+          849,
+          850,
+          851,
+          852,
+          853,
+          854
+        ]
+      },
+      "importance": 78
+    },
+    {
+      "type": "correlation",
+      "columns": [
+        "orders",
+        "revenue"
+      ],
+      "text": "\ud83d\udd17 orders and revenue show very strong positive correlation (r=0.97). When orders increases, revenue tends to increase as well.",
+      "data": {
+        "correlation": 0.9729940543760203,
+        "direction": "positive",
+        "strength": "very strong"
+      },
+      "importance": 77
+    },
+    {
+      "type": "anomaly",
+      "column": "website_visitors",
+      "text": "\ud83c\udfaf Detected 37 significant anomalies in website_visitors (1.7% of data). Anomalies are clustered in time, suggesting event-driven spikes. Largest spike: 3322.00 on 2025-08-29.",
+      "data": {
+        "count": 37,
+        "percentage": 1.712962962962963,
+        "clustered": "True",
+        "max_value": 3322.0,
+        "max_date": "2025-08-29 07:06:11.183308",
+        "anomaly_indices": [
+          372,
+          397,
+          849,
+          850,
+          851,
+          852,
+          853,
+          854,
+          855,
+          856
+        ]
+      },
+      "importance": 74
+    }
+  ],
+  "export_info": {
+    "generated_at": "20251022_180623",
+    "format": "json",
+    "purpose": "api_integration"
+  }
+}
